@@ -9,26 +9,13 @@ resources:
 - name: veracode-image
   type: docker-image
   source:
-    repository: ctcampbelldocker/veracode-ci-examples
+    repository: veracode/api-wrapper-java
 
 jobs:
 - name: scan-with-veracode
   plan:
   - get: veracode-flask-example
   - get: veracode-image
-  - task: download-wrapper
-    image: veracode-image
-    config:
-      platform: linux
-      inputs:
-      - name: veracode-flask-example
-      outputs:
-      - name: wrapper
-      run:
-        path: wget
-        args: ["-O", "wrapper/veracode-wrapper.jar", "https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/((VERACODE_WRAPPER_VERSION))/vosp-api-wrappers-java-((VERACODE_WRAPPER_VERSION)).jar"]
-      params:
-        VERACODE_WRAPPER_VERSION:
   - task: package
     image: veracode-image
     config:
@@ -49,7 +36,7 @@ jobs:
       - name: project-zip  
       run:
         path: /veracode/veracode-ci-examples/uploadandscan.sh
-        args: [((TEAM_ANALYSISCENTER_ID)), ((TEAM_ANALYSISCENTER_KEY)), "wrapper/veracode-wrapper.jar", ((PROJECT_NAME)), "project-zip/veracode.zip"]
+        args: [((TEAM_ANALYSISCENTER_ID)), ((TEAM_ANALYSISCENTER_KEY)), "/opt/veracode/api-wrapper.jar", ((PROJECT_NAME)), "project-zip/veracode.zip"]
       params:
         TEAM_ANALYSISCENTER_ID:
         TEAM_ANALYSISCENTER_KEY:
